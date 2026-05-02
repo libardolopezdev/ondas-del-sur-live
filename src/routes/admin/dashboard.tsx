@@ -1,12 +1,19 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense, lazy } from "react";
 import { supabase } from "@/lib/supabase";
 import { useSettings } from "@/hooks/useSettings";
-import { Steps } from "intro.js-react";
-import "intro.js/introjs.css";
 import { ContextHelp } from "@/components/admin/ContextHelp";
 import { ImageUploader } from "@/components/admin/ImageUploader";
 import { HelpCircle } from "lucide-react";
+
+// Lazy-load intro.js only on the client — it uses `document` at import time
+const IntroSteps = lazy(() =>
+  import("intro.js-react").then((m) => {
+    // Also load the CSS dynamically (browser-only)
+    import("intro.js/introjs.css");
+    return { default: m.Steps };
+  })
+);
 
 export const Route = createFileRoute("/admin/dashboard")({
   component: DashboardPage,
@@ -133,18 +140,20 @@ function DashboardPage() {
 
       {/* Content */}
       <main className="flex-1 p-6 lg:p-12 overflow-y-auto relative">
-        <Steps
-          enabled={stepsEnabled}
-          steps={steps}
-          initialStep={0}
-          onExit={onTourExit}
-          options={{
-            nextLabel: "Siguiente",
-            prevLabel: "Anterior",
-            skipLabel: "Saltar",
-            doneLabel: "Finalizar",
-          }}
-        />
+        <Suspense fallback={null}>
+          <IntroSteps
+            enabled={stepsEnabled}
+            steps={steps}
+            initialStep={0}
+            onExit={onTourExit}
+            options={{
+              nextLabel: "Siguiente",
+              prevLabel: "Anterior",
+              skipLabel: "Saltar",
+              doneLabel: "Finalizar",
+            }}
+          />
+        </Suspense>
 
         <header className="mb-10 admin-header">
           <h1 className="text-3xl lg:text-5xl font-black tracking-tight capitalize">

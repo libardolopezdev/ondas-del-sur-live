@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Howl } from "howler";
+import type { Howl as HowlType } from "howler";
 import { Equalizer } from "./Equalizer";
 import { LiveBadge } from "./LiveBadge";
 
@@ -14,7 +14,7 @@ export function LivePlayer() {
   const [volume, setVolume] = useState(70);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const soundRef = useRef<Howl | null>(null);
+  const soundRef = useRef<HowlType | null>(null);
 
   useEffect(() => {
     return () => {
@@ -30,14 +30,16 @@ export function LivePlayer() {
     }
   }, [volume]);
 
-  const togglePlay = () => {
+  const togglePlay = async () => {
     if (playing) {
       soundRef.current?.pause();
       setPlaying(false);
     } else {
       setError(null);
       if (!soundRef.current) {
+        if (typeof window === 'undefined') return;
         setLoading(true);
+        const { Howl } = await import("howler");
         soundRef.current = new Howl({
           src: [streamUrl],
           html5: true,

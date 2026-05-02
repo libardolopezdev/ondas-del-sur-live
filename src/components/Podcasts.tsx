@@ -1,13 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 import { Mic, Play, Pause, Loader2 } from "lucide-react";
-import { Howl } from "howler";
+import type { Howl as HowlType } from "howler";
 
 export function Podcasts() {
   const [pods, setPods] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [playingId, setPlayingId] = useState<string | null>(null);
-  const soundRef = useRef<Howl | null>(null);
+  const soundRef = useRef<HowlType | null>(null);
 
   useEffect(() => {
     async function fetchPods() {
@@ -27,7 +27,8 @@ export function Podcasts() {
     };
   }, []);
 
-  const handlePlay = (pod: any) => {
+  const handlePlay = async (pod: any) => {
+    if (typeof window === 'undefined') return;
     if (playingId === pod.id) {
       if (soundRef.current?.playing()) {
         soundRef.current.pause();
@@ -47,6 +48,7 @@ export function Podcasts() {
       return;
     }
 
+    const { Howl } = await import("howler");
     const sound = new Howl({
       src: [pod.audio_url],
       html5: true,
@@ -116,4 +118,3 @@ export function Podcasts() {
   );
 }
 
-import { useRef } from "react";

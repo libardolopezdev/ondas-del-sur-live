@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Howl } from "howler";
+import type { Howl as HowlType } from "howler";
 import { Play, Pause, Loader2, Music } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
@@ -12,7 +12,7 @@ export function TopSongs() {
   const [previews, setPreviews] = useState<{ [key: number]: string | null }>({});
   const [loadingSongs, setLoadingSongs] = useState(true);
   
-  const soundRef = useRef<Howl | null>(null);
+  const soundRef = useRef<HowlType | null>(null);
   const progressInterval = useRef<any>(null);
 
   useEffect(() => {
@@ -55,6 +55,7 @@ export function TopSongs() {
   };
 
   const handlePlay = async (index: number) => {
+    if (typeof window === 'undefined') return;
     // If clicking the same song that is playing, toggle
     if (currentId === index && soundRef.current) {
       if (playing) {
@@ -84,6 +85,7 @@ export function TopSongs() {
       return;
     }
 
+    const { Howl } = await import("howler");
     const sound = new Howl({
       src: [url],
       html5: true,

@@ -1,0 +1,108 @@
+import { useState } from "react";
+import { Equalizer } from "./Equalizer";
+import { LiveBadge } from "./LiveBadge";
+
+export function LivePlayer() {
+  const [playing, setPlaying] = useState(false);
+  const [volume, setVolume] = useState(70);
+
+  return (
+    <section id="en-vivo" className="relative py-24 lg:py-32 overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-surface" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-primary/10 blur-3xl" />
+
+      <div className="relative max-w-6xl mx-auto px-5 lg:px-8">
+        <div className="text-center mb-12">
+          <span className="text-xs font-bold tracking-[0.3em] text-primary uppercase">Reproductor</span>
+          <h2 className="text-4xl lg:text-6xl font-black mt-3">Sintoniza la señal</h2>
+        </div>
+
+        <div className="glass rounded-3xl p-6 lg:p-10 shadow-elevated">
+          <div className="flex flex-col lg:flex-row items-center gap-8">
+            {/* Album/cover */}
+            <div className="relative shrink-0">
+              <div className="absolute inset-0 bg-gradient-brand blur-2xl opacity-50" />
+              <div className="relative h-44 w-44 lg:h-56 lg:w-56 rounded-2xl bg-gradient-brand flex items-center justify-center shadow-glow overflow-hidden">
+                <div className={`absolute inset-0 ${playing ? "animate-spin" : ""}`} style={{ animationDuration: "20s" }}>
+                  <div className="absolute inset-4 rounded-full border-2 border-dashed border-primary-foreground/30" />
+                </div>
+                <span className="relative text-6xl lg:text-7xl font-black text-primary-foreground">106.6</span>
+              </div>
+            </div>
+
+            {/* Info + controls */}
+            <div className="flex-1 w-full text-center lg:text-left">
+              <div className="flex items-center gap-3 justify-center lg:justify-start mb-3">
+                <LiveBadge />
+                <span className="text-xs text-muted-foreground tracking-widest uppercase">Ahora suena</span>
+              </div>
+
+              <h3 className="text-2xl lg:text-4xl font-black mb-1">Mañanas del Sur</h3>
+              <p className="text-muted-foreground mb-6">
+                con <span className="text-primary font-semibold">Carlos Ramírez</span> · Música, noticias y el saludo de la comunidad
+              </p>
+
+              {/* Controls */}
+              <div className="flex items-center gap-4 justify-center lg:justify-start mb-6">
+                <button className="h-11 w-11 rounded-full glass flex items-center justify-center hover:text-primary transition" aria-label="Anterior">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zM9.5 12l8.5 6V6z" /></svg>
+                </button>
+                <button
+                  onClick={() => setPlaying(!playing)}
+                  aria-label={playing ? "Pausar" : "Reproducir"}
+                  className="h-16 w-16 lg:h-20 lg:w-20 rounded-full bg-gradient-brand flex items-center justify-center shadow-glow hover:scale-105 transition-transform"
+                >
+                  {playing ? (
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" className="text-primary-foreground"><path d="M6 5h4v14H6zM14 5h4v14h-4z" /></svg>
+                  ) : (
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" className="text-primary-foreground translate-x-0.5"><path d="M8 5v14l11-7z" /></svg>
+                  )}
+                </button>
+                <button className="h-11 w-11 rounded-full glass flex items-center justify-center hover:text-primary transition" aria-label="Siguiente">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M16 6h2v12h-2zM6 18l8.5-6L6 6z" /></svg>
+                </button>
+
+                <div className="hidden sm:flex items-center gap-3 ml-4">
+                  {playing ? <Equalizer bars={4} /> : <span className="text-xs text-muted-foreground">Pausado</span>}
+                </div>
+              </div>
+
+              {/* Volume */}
+              <div className="flex items-center gap-3 max-w-sm mx-auto lg:mx-0">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" className="text-muted-foreground shrink-0">
+                  <path d="M3 9v6h4l5 5V4L7 9H3z" />
+                </svg>
+                <input
+                  type="range"
+                  min={0}
+                  max={100}
+                  value={volume}
+                  onChange={(e) => setVolume(Number(e.target.value))}
+                  className="flex-1 h-1 rounded-full bg-muted appearance-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:shadow-glow"
+                  style={{ background: `linear-gradient(to right, oklch(0.74 0.19 48) 0%, oklch(0.74 0.19 48) ${volume}%, oklch(0.26 0.030 262) ${volume}%)` }}
+                />
+                <span className="text-xs font-mono text-muted-foreground w-8 text-right">{volume}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Marquee */}
+        <div className="mt-10 overflow-hidden border-y border-border py-4">
+          <div className="flex gap-12 animate-marquee whitespace-nowrap">
+            {Array.from({ length: 2 }).map((_, k) => (
+              <div key={k} className="flex gap-12 shrink-0">
+                {["Música del recuerdo", "Noticias locales", "Saludos de la comunidad", "Música popular", "Eventos de Sativasur", "Voces de Boyacá", "106.6 FM Stereo"].map((t, i) => (
+                  <span key={i} className="inline-flex items-center gap-3 text-sm text-muted-foreground">
+                    <span className="h-1 w-1 rounded-full bg-primary" />
+                    {t}
+                  </span>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}

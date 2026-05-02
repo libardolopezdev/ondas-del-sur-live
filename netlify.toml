@@ -1,9 +1,6 @@
 [build]
   command = "npm run build"
-  publish = ".output/public"
-
-[functions]
-  directory = ".output/server"
+  publish = "dist/client"
 
 [[headers]]
   for = "/*"
@@ -24,7 +21,3 @@
   [headers.values]
     Cache-Control = "public, max-age=86400"
 
-[[redirects]]
-  from = "/*"
-  to = "/.netlify/functions/handler"
-  status = 200

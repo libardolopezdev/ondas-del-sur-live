@@ -1,10 +1,77 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import { Howl } from "howler";
 import { Equalizer } from "./Equalizer";
 import { LiveBadge } from "./LiveBadge";
 
+import { useSettings } from "@/hooks/useSettings";
+
+const DEFAULT_STREAM_URL = "https://sonic.paulatina.co/8036/stream";
+
 export function LivePlayer() {
+  const { settings } = useSettings();
+  const streamUrl = settings?.stream_url || DEFAULT_STREAM_URL;
   const [playing, setPlaying] = useState(false);
   const [volume, setVolume] = useState(70);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const soundRef = useRef<Howl | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (soundRef.current) {
+        soundRef.current.unload();
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (soundRef.current) {
+      soundRef.current.volume(volume / 100);
+    }
+  }, [volume]);
+
+  const togglePlay = () => {
+    if (playing) {
+      soundRef.current?.pause();
+      setPlaying(false);
+    } else {
+      setError(null);
+      if (!soundRef.current) {
+        setLoading(true);
+        soundRef.current = new Howl({
+          src: [streamUrl],
+          html5: true,
+          format: ["mp3"],
+          volume: volume / 100,
+          onload: () => {
+            setLoading(false);
+            soundRef.current?.play();
+          },
+          onplay: () => {
+            setPlaying(true);
+            setLoading(false);
+          },
+          onpause: () => setPlaying(false),
+          onstop: () => setPlaying(false),
+          onloaderror: () => {
+            setError("Error de conexión con la señal");
+            setLoading(false);
+            setPlaying(false);
+            soundRef.current = null;
+          },
+          onplayerror: () => {
+            setError("Error al reproducir la señal");
+            setLoading(false);
+            setPlaying(false);
+            soundRef.current?.unload();
+            soundRef.current = null;
+          },
+        });
+      } else {
+        soundRef.current.play();
+      }
+    }
+  };
 
   return (
     <section id="en-vivo" className="relative py-24 lg:py-32 overflow-hidden">
@@ -34,36 +101,49 @@ export function LivePlayer() {
             <div className="flex-1 w-full text-center lg:text-left">
               <div className="flex items-center gap-3 justify-center lg:justify-start mb-3">
                 <LiveBadge />
-                <span className="text-xs text-muted-foreground tracking-widest uppercase">Ahora suena</span>
+                <span className="text-xs text-muted-foreground tracking-widest uppercase">
+                  {playing ? "En vivo · FM 106.6" : "Ahora suena"}
+                </span>
               </div>
 
-              <h3 className="text-2xl lg:text-4xl font-black mb-1">Mañanas del Sur</h3>
+              <h3 className="text-2xl lg:text-4xl font-black mb-1">Ondas del Sur</h3>
               <p className="text-muted-foreground mb-6">
-                con <span className="text-primary font-semibold">Carlos Ramírez</span> · Música, noticias y el saludo de la comunidad
+                La señal que nos une desde el corazón de Boyacá · <span className="text-primary font-semibold">106.6 FM Stereo</span>
               </p>
+
+              {/* Error message */}
+              {error && (
+                <div className="mb-4 p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm font-medium animate-fade-up">
+                  {error}. Por favor, intenta de nuevo.
+                </div>
+              )}
 
               {/* Controls */}
               <div className="flex items-center gap-4 justify-center lg:justify-start mb-6">
-                <button className="h-11 w-11 rounded-full glass flex items-center justify-center hover:text-primary transition" aria-label="Anterior">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zM9.5 12l8.5 6V6z" /></svg>
-                </button>
                 <button
-                  onClick={() => setPlaying(!playing)}
+                  onClick={togglePlay}
+                  disabled={loading}
                   aria-label={playing ? "Pausar" : "Reproducir"}
-                  className="h-16 w-16 lg:h-20 lg:w-20 rounded-full bg-gradient-brand flex items-center justify-center shadow-glow hover:scale-105 transition-transform"
+                  className={`h-16 w-16 lg:h-20 lg:w-20 rounded-full bg-gradient-brand flex items-center justify-center shadow-glow hover:scale-105 transition-transform ${loading ? "opacity-70 cursor-wait" : ""}`}
                 >
-                  {playing ? (
+                  {loading ? (
+                    <div className="h-6 w-6 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+                  ) : playing ? (
                     <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" className="text-primary-foreground"><path d="M6 5h4v14H6zM14 5h4v14h-4z" /></svg>
                   ) : (
                     <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" className="text-primary-foreground translate-x-0.5"><path d="M8 5v14l11-7z" /></svg>
                   )}
                 </button>
-                <button className="h-11 w-11 rounded-full glass flex items-center justify-center hover:text-primary transition" aria-label="Siguiente">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M16 6h2v12h-2zM6 18l8.5-6L6 6z" /></svg>
-                </button>
 
-                <div className="hidden sm:flex items-center gap-3 ml-4">
-                  {playing ? <Equalizer bars={4} /> : <span className="text-xs text-muted-foreground">Pausado</span>}
+                <div className="flex items-center gap-3 ml-4 min-w-[80px]">
+                  {playing ? (
+                    <div className="flex items-center gap-3">
+                      <Equalizer bars={4} />
+                      <span className="text-xs text-primary font-bold animate-pulse-live">PLAYING</span>
+                    </div>
+                  ) : (
+                    <span className="text-xs text-muted-foreground">{loading ? "Conectando..." : "Detenido"}</span>
+                  )}
                 </div>
               </div>
 

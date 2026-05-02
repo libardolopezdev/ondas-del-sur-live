@@ -1,4 +1,4 @@
-import logo from "@/assets/logo.png";
+import logo from "@/assets/logo.webp";
 
 export function Footer() {
   return (
@@ -7,7 +7,7 @@ export function Footer() {
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-border">
           <div className="lg:col-span-2">
             <div className="flex items-center gap-3 mb-4">
-              <img src={logo} alt="" width={48} height={48} className="h-12 w-12 object-contain" />
+              <img src={logo} alt="" width={48} height={48} loading="lazy" className="h-12 w-12 object-contain" />
               <div>
                 <div className="font-black text-lg leading-tight">Ondas del Sur</div>
                 <div className="text-primary text-xs font-bold tracking-widest">106.6 FM STEREO</div>

@@ -1,4 +1,4 @@
-import heroBg from "@/assets/hero-bg.jpg";
+import heroBg from "@/assets/hero-bg.webp";
 import { Equalizer } from "./Equalizer";
 import { LiveBadge } from "./LiveBadge";
 
@@ -97,6 +97,7 @@ export function Hero() {
               animationDelay: `${(i % 12) * 0.08}s`,
               animationDuration: `${0.8 + (i % 5) * 0.15}s`,
               height: `${10 + ((i * 7) % 60)}%`,
+              transformOrigin: "bottom",
             }}
           />
         ))}

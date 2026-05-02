@@ -9,6 +9,7 @@ import { Community } from "@/components/Community";
 import { Podcasts } from "@/components/Podcasts";
 import { Gallery } from "@/components/Gallery";
 import { Participation } from "@/components/Participation";
+import { Team } from "@/components/Team";
 import { Footer } from "@/components/Footer";
 import { FloatingWhatsApp } from "@/components/FloatingWhatsApp";
 
@@ -42,6 +43,7 @@ function Index() {
         <Community />
         <Podcasts />
         <Gallery />
+        <Team />
         <Participation />
       </main>
       <Footer />

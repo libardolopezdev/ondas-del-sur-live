@@ -38,3 +38,6 @@ dist-ssr
 
 # Scratch files
 scratch/
+
+# Netlify
+.netlify/

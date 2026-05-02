@@ -1,26 +1,51 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Navbar } from "@/components/Navbar";
+import { Hero } from "@/components/Hero";
+import { LivePlayer } from "@/components/LivePlayer";
+import { Schedule } from "@/components/Schedule";
+import { TopSongs } from "@/components/TopSongs";
+import { News } from "@/components/News";
+import { Community } from "@/components/Community";
+import { Podcasts } from "@/components/Podcasts";
+import { Gallery } from "@/components/Gallery";
+import { Participation } from "@/components/Participation";
+import { Footer } from "@/components/Footer";
+import { FloatingWhatsApp } from "@/components/FloatingWhatsApp";
 
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "Ondas del Sur 106.6 FM Stereo — La Verdadera Emisora del Pueblo" },
+      {
+        name: "description",
+        content:
+          "Ondas del Sur 106.6 FM Stereo, emisora comunitaria de Sativasur, Boyacá. Música, noticias y la voz de nuestra comunidad las 24 horas del día.",
+      },
+      { property: "og:title", content: "Ondas del Sur 106.6 FM Stereo" },
+      { property: "og:description", content: "La Verdadera Emisora del Pueblo · Sativasur, Boyacá, Colombia." },
+      { property: "og:type", content: "website" },
+    ],
+  }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. For sites with multiple pages (About, Services, Contact, etc.),
-// create separate route files (about.tsx, services.tsx, contact.tsx) — don't put all pages in this file.
-function PlaceholderIndex() {
+function Index() {
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
+    <div className="min-h-screen bg-background text-foreground">
+      <Navbar />
+      <main>
+        <Hero />
+        <LivePlayer />
+        <Schedule />
+        <TopSongs />
+        <News />
+        <Community />
+        <Podcasts />
+        <Gallery />
+        <Participation />
+      </main>
+      <Footer />
+      <FloatingWhatsApp />
     </div>
   );
-}
-
-function Index() {
-  return <PlaceholderIndex />;
 }

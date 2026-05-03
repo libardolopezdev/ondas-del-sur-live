@@ -187,8 +187,6 @@ function DashboardPage() {
   );
 }
 
-}
-
 // Helpers for schedule validation
 function parseTime(timeStr: string) {
   if (!timeStr) return 0;
@@ -226,7 +224,6 @@ function AdminShows() {
     tag: "En vivo",
     days: "Lunes, Martes, Miércoles, Jueves, Viernes",
     is_live: false 
-  });
   });
   const [autoShow, setAutoShow] = useState<any>(null);
   const [settings, setSettings] = useState<any>(null);

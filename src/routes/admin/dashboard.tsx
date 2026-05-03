@@ -187,6 +187,31 @@ function DashboardPage() {
   );
 }
 
+}
+
+// Helpers for schedule validation
+function parseTime(timeStr: string) {
+  if (!timeStr) return 0;
+  const [h, m] = timeStr.split(":").map(Number);
+  return h * 60 + m;
+}
+
+function parseDays(daysStr: string) {
+  if (!daysStr) return [];
+  const lower = daysStr.toLowerCase();
+  const allDays = ["lunes", "martes", "miércoles", "miercoles", "jueves", "viernes", "sábado", "sabado", "domingo"];
+  if (lower.includes("todos") || lower.includes("lunes a domingo")) return allDays;
+  if (lower.includes("lunes a viernes")) return ["lunes", "martes", "miércoles", "miercoles", "jueves", "viernes"];
+  return allDays.filter(d => lower.includes(d));
+}
+
+function shareDay(daysA: string, daysB: string) {
+  const arrA = parseDays(daysA);
+  const arrB = parseDays(daysB);
+  if (arrA.length === 0 || arrB.length === 0) return true; // If parsing fails, assume overlap to be safe
+  return arrA.some(d => arrB.includes(d));
+}
+
 // Subcomponents (Placeholders for now)
 function AdminShows() {
   const [shows, setShows] = useState<any[]>([]);
@@ -202,8 +227,12 @@ function AdminShows() {
     days: "Lunes, Martes, Miércoles, Jueves, Viernes",
     is_live: false 
   });
+  });
   const [autoShow, setAutoShow] = useState<any>(null);
   const [settings, setSettings] = useState<any>(null);
+  const [errorMsg, setErrorMsg] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
+  const [conflictId, setConflictId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchShows();
@@ -246,6 +275,40 @@ function AdminShows() {
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMsg("");
+    setSuccessMsg("");
+    setConflictId(null);
+
+    const newStart = parseTime(formData.time_start);
+    const newEnd = parseTime(formData.time_end);
+
+    if (newEnd <= newStart) {
+      setErrorMsg("La hora de fin debe ser después de la hora de inicio");
+      return;
+    }
+
+    if (newEnd - newStart < 15) {
+      setErrorMsg("El programa debe durar al menos 15 minutos");
+      return;
+    }
+
+    // Overlap detection
+    const conflict = shows.find(s => {
+      if (currentShow && s.id === currentShow.id) return false;
+      if (shareDay(formData.days, s.days)) {
+        const existStart = parseTime(s.time_start);
+        const existEnd = parseTime(s.time_end);
+        return newStart < existEnd && newEnd > existStart;
+      }
+      return false;
+    });
+
+    if (conflict) {
+      setErrorMsg(`⚠️ Este horario se cruza con '${conflict.title}' que va de ${conflict.time_start.substring(0,5)} a ${conflict.time_end.substring(0,5)}. Por favor elige un horario diferente.`);
+      setConflictId(conflict.id);
+      return;
+    }
+
     setLoading(true);
     
     if (currentShow) {
@@ -256,7 +319,11 @@ function AdminShows() {
 
     setIsEditing(false);
     setCurrentShow(null);
-    setFormData({ title: "", host: "", time_start: "08:00", time_end: "10:00", tag: "En vivo", is_live: false });
+    setFormData({ title: "", host: "", time_start: "08:00", time_end: "10:00", tag: "En vivo", days: "Lunes a Viernes", is_live: false });
+    
+    setSuccessMsg("✅ Programa agregado correctamente");
+    setTimeout(() => setSuccessMsg(""), 3000);
+    
     fetchShows();
   };
 
@@ -283,13 +350,26 @@ function AdminShows() {
         <h3 className="text-xl font-bold">Parrilla de Programación</h3>
         {!isEditing && (
           <button 
-            onClick={() => { setIsEditing(true); setCurrentShow(null); setFormData({ title: "", host: "", time_start: "08:00", time_end: "10:00", tag: "En vivo", days: "Lunes a Viernes", is_live: false }); }}
+            onClick={() => { 
+              setIsEditing(true); 
+              setCurrentShow(null); 
+              setFormData({ title: "", host: "", time_start: "08:00", time_end: "10:00", tag: "En vivo", days: "Lunes a Viernes", is_live: false }); 
+              setErrorMsg(""); 
+              setSuccessMsg(""); 
+              setConflictId(null); 
+            }}
             className="px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-bold hover:bg-emerald-500 transition"
           >
             + Añadir Programa
           </button>
         )}
       </div>
+
+      {successMsg && (
+        <div className="p-4 bg-emerald-500/20 border border-emerald-500/50 text-emerald-400 font-bold rounded-xl animate-fade-up">
+          {successMsg}
+        </div>
+      )}
 
       {settings?.auto_schedule && (
         <div className="p-4 bg-primary/10 border border-primary/30 rounded-2xl flex items-center gap-4 animate-pulse">
@@ -307,6 +387,13 @@ function AdminShows() {
 
       {isEditing ? (
         <form onSubmit={handleSave} className="bg-slate-900 border border-slate-800 rounded-3xl p-8 space-y-6 animate-fade-up">
+          
+          {errorMsg && (
+            <div className="p-4 bg-destructive/20 border border-destructive/50 text-destructive font-bold rounded-xl text-sm">
+              {errorMsg}
+            </div>
+          )}
+
           <div className="grid md:grid-cols-2 gap-6">
             <div className="space-y-4">
               <div>
@@ -370,6 +457,51 @@ function AdminShows() {
               </div>
             </div>
           </div>
+
+          <div className="mt-4 p-4 bg-slate-950 rounded-xl border border-slate-800">
+            <label className="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">
+              Vista previa del horario ({formData.days || "Sin días"})
+            </label>
+            <div className="relative h-8 bg-slate-800 rounded-lg overflow-hidden border border-slate-700">
+              {shows
+                .filter(s => (!currentShow || s.id !== currentShow.id) && shareDay(formData.days, s.days))
+                .map(s => {
+                  const sStart = parseTime(s.time_start);
+                  const sEnd = parseTime(s.time_end);
+                  const left = (sStart / 1440) * 100;
+                  const width = ((sEnd - sStart) / 1440) * 100;
+                  return (
+                    <div 
+                      key={s.id} 
+                      className="absolute top-0 bottom-0 bg-orange-500/80 border-l border-orange-400 group/tt"
+                      style={{ left: `${left}%`, width: `${width}%` }}
+                    >
+                      <div className="opacity-0 group-hover/tt:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] py-1 px-2 rounded whitespace-nowrap z-20 pointer-events-none transition-opacity">
+                        {s.title} ({s.time_start} - {s.time_end})
+                      </div>
+                    </div>
+                  );
+                })}
+              
+              {parseTime(formData.time_start) < parseTime(formData.time_end) && (
+                <div 
+                  className="absolute top-0 bottom-0 bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.8)] z-10 border-l-2 border-emerald-300" 
+                  style={{ 
+                    left: `${(parseTime(formData.time_start) / 1440) * 100}%`, 
+                    width: `${((parseTime(formData.time_end) - parseTime(formData.time_start)) / 1440) * 100}%` 
+                  }} 
+                />
+              )}
+            </div>
+            <div className="flex justify-between text-[10px] text-slate-500 mt-2 font-mono font-bold">
+              <span>00:00</span>
+              <span>06:00</span>
+              <span>12:00</span>
+              <span>18:00</span>
+              <span>23:59</span>
+            </div>
+          </div>
+
           <div className="flex gap-4">
             <button type="submit" className="px-8 py-3 bg-primary text-primary-foreground font-bold rounded-xl shadow-glow">Guardar Programa</button>
             <button type="button" onClick={() => setIsEditing(false)} className="px-8 py-3 bg-slate-800 text-white font-bold rounded-xl">Cancelar</button>
@@ -388,8 +520,15 @@ function AdminShows() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800">
-              {shows.map((show) => (
-                <tr key={show.id} className={`transition ${autoShow?.id === show.id && settings?.auto_schedule ? 'bg-primary/5 border-l-4 border-l-primary' : 'hover:bg-slate-800/50'}`}>
+              {shows.map((show) => {
+                const isConflict = conflictId === show.id;
+                const isAuto = autoShow?.id === show.id && settings?.auto_schedule;
+                let trClass = "transition hover:bg-slate-800/50";
+                if (isConflict) trClass = "transition bg-destructive/10 border-l-4 border-l-destructive";
+                else if (isAuto) trClass = "transition bg-primary/5 border-l-4 border-l-primary";
+                
+                return (
+                <tr key={show.id} className={trClass}>
                   <td className="px-6 py-4">
                     <div className="font-bold">{show.title}</div>
                     <div className="text-[10px] text-slate-500 uppercase font-black">{show.host}</div>
@@ -415,11 +554,12 @@ function AdminShows() {
                     )}
                   </td>
                   <td className="px-6 py-4 text-right space-x-3">
-                    <button onClick={() => { setCurrentShow(show); setFormData({ ...show }); setIsEditing(true); }} className="text-primary hover:text-white transition text-sm font-bold">Editar</button>
+                    <button onClick={() => { setCurrentShow(show); setFormData({ ...show }); setIsEditing(true); setErrorMsg(""); setSuccessMsg(""); setConflictId(null); }} className="text-primary hover:text-white transition text-sm font-bold">Editar</button>
                     <button onClick={() => deleteShow(show.id)} className="text-red-400 hover:text-red-300 transition text-sm font-bold">Eliminar</button>
                   </td>
                 </tr>
-              ))}
+                );
+              })}
               {shows.length === 0 && (
                 <tr>
                   <td colSpan={5} className="px-6 py-10 text-center text-slate-500 italic">No hay programas registrados.</td>

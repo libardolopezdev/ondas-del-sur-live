@@ -157,7 +157,7 @@ export function TopSongs() {
         <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-12">
           <div>
             <span className="text-xs font-bold tracking-[0.3em] text-primary uppercase">Ranking semanal</span>
-            <h2 className="text-4xl lg:text-6xl font-black mt-3">Top 10 más sonadas</h2>
+            <h2 className="text-3xl lg:text-5xl font-black mt-3 break-words">Top 10 más sonadas</h2>
           </div>
           <div className="text-right">
             <p className="text-sm text-muted-foreground max-w-sm">Las canciones más pedidas por nuestros oyentes esta semana en Ondas del Sur.</p>
@@ -171,18 +171,18 @@ export function TopSongs() {
             songs.map((s, i) => (
               <div
                 key={i}
-                className={`group relative flex flex-col rounded-2xl border transition-all ${
+                className={`group relative flex flex-col rounded-2xl border transition-all overflow-hidden max-w-full ${
                   currentId === i 
                     ? "bg-primary/5 border-primary/40 shadow-glow" 
                     : "bg-card/40 border-border hover:border-primary/30"
                 }`}
               >
-                <div className="flex items-center gap-4 p-4">
-                  <div className={`text-3xl lg:text-4xl font-black w-12 text-right tabular-nums ${i < 3 ? "text-gradient-brand" : "text-muted-foreground/50"}`}>
+                <div className="flex items-center gap-2 sm:gap-4 px-3 py-3 sm:px-5 sm:py-4">
+                  <div className={`text-2xl sm:text-3xl lg:text-4xl font-black w-8 sm:w-12 shrink-0 text-right tabular-nums ${i < 3 ? "text-gradient-brand" : "text-muted-foreground/50"}`}>
                     {String(i + 1).padStart(2, "0")}
                   </div>
                   
-                  <div className="relative h-14 w-14 rounded-xl bg-gradient-brand flex items-center justify-center shrink-0 overflow-hidden shadow-lg group-hover:scale-105 transition-transform">
+                  <div className="relative h-12 w-12 sm:h-14 sm:w-14 rounded-xl bg-gradient-brand flex items-center justify-center shrink-0 overflow-hidden shadow-lg group-hover:scale-105 transition-transform">
                     <Music className="text-primary-foreground" size={24} />
                     {currentId === i && playing && (
                       <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
@@ -195,9 +195,9 @@ export function TopSongs() {
                     )}
                   </div>
 
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-bold truncate group-hover:text-primary transition">{s.title}</h3>
-                    <p className="text-xs text-muted-foreground truncate">{s.artist} · {s.genre}</p>
+                  <div className="flex-1 min-w-0 pr-1">
+                    <h3 className="text-sm sm:text-base font-bold truncate group-hover:text-primary transition">{s.title}</h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground truncate">{s.artist} · {s.genre}</p>
                     {currentId === i && (
                       <p className="text-[10px] font-black text-primary uppercase tracking-widest mt-1 animate-pulse">
                         Vista previa 30s · Deezer
@@ -210,7 +210,7 @@ export function TopSongs() {
                     )}
                   </div>
 
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2 sm:gap-4 shrink-0">
                     <span className={`text-xs font-mono hidden sm:block ${trendColor(s.trend)}`}>
                       {trendIcon(s.trend)}
                     </span>
@@ -219,7 +219,7 @@ export function TopSongs() {
                       onClick={() => handlePlay(i)}
                       disabled={loadingId === i}
                       aria-label={currentId === i && playing ? "Pausar reproducción" : "Reproducir canción"}
-                      className={`h-12 w-12 rounded-full flex items-center justify-center transition shadow-lg ${
+                      className={`h-10 w-10 sm:h-12 sm:w-12 shrink-0 rounded-full flex items-center justify-center transition shadow-lg ${
                         currentId === i && playing
                           ? "bg-primary text-primary-foreground"
                           : "bg-secondary text-primary hover:bg-primary hover:text-primary-foreground"

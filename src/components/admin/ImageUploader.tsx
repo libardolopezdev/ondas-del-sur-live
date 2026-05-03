@@ -124,7 +124,7 @@ export function ImageUploader({ onUploadComplete, folder, currentImageUrl }: Ima
         
         {preview ? (
           <div className="relative group">
-            <img src={preview} alt="Preview" className="h-40 w-full object-cover rounded-xl shadow-lg" />
+            <img src={preview} alt="Preview" width={400} height={160} className="h-40 w-full object-cover rounded-xl shadow-lg" />
             <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition flex items-center justify-center rounded-xl">
               <span className="text-white text-xs font-bold">Cambiar imagen</span>
             </div>

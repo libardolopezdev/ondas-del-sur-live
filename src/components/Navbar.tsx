@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import logo from "@/assets/logo-v4.webp";
+import logo137 from "@/assets/logo-137w.webp";
+import logo274 from "@/assets/logo-274w.webp";
 
 const links = [
   { href: "#en-vivo", label: "En vivo" },
@@ -31,7 +32,11 @@ export function Navbar() {
       <nav className="max-w-7xl mx-auto px-5 lg:px-8 h-16 lg:h-20 flex items-center justify-between">
         <a href="#hero" className="flex items-center gap-3 group relative">
           <img 
-            src={logo} 
+            src={logo137} 
+            srcSet={`${logo137} 137w, ${logo274} 274w`}
+            sizes="(min-width: 640px) 160px, 137px"
+            width={137}
+            height={64}
             alt="Ondas del Sur" 
             className="h-12 sm:h-14 w-auto object-contain rounded-[10%] shadow-glow transition-transform group-hover:scale-105" 
           />

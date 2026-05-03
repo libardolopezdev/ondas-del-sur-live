@@ -49,7 +49,7 @@ export function Participation() {
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1 0 2 1 2 2v12c0 1-1 2-2 2H4c-1 0-2-1-2-2V6c0-1 1-2 2-2z"/><path d="m22 6-10 7L2 6"/></svg>
             </div>
             <div className="text-xs font-bold tracking-widest uppercase text-primary mb-1">Correo</div>
-            <h3 className="font-bold text-lg leading-tight break-all group-hover:text-primary transition">radialcomunitaria106.6@hotmail.com</h3>
+            <div className="font-bold text-lg leading-tight break-all group-hover:text-primary transition">radialcomunitaria106.6@hotmail.com</div>
           </a>
 
           {/* Cabina */}
@@ -58,7 +58,7 @@ export function Participation() {
               <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M20 15.5c-1.25 0-2.45-.2-3.57-.57a1 1 0 0 0-1.02.24l-2.2 2.2a15.07 15.07 0 0 1-6.59-6.58l2.2-2.21a.96.96 0 0 0 .25-1A11.36 11.36 0 0 1 8.5 4a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1c0 9.39 7.61 17 17 17a1 1 0 0 0 1-1v-3.5a1 1 0 0 0-1-1z"/></svg>
             </div>
             <div className="text-xs font-bold tracking-widest uppercase text-primary mb-1">Cabina</div>
-            <h3 className="font-bold text-lg leading-tight">+57 323 246 4160</h3>
+            <div className="font-bold text-lg leading-tight">+57 323 246 4160</div>
             <p className="text-sm text-muted-foreground mt-2">Llámanos durante la transmisión en vivo.</p>
           </div>
 
@@ -66,7 +66,7 @@ export function Participation() {
           <div className="lg:col-span-2 p-8 rounded-3xl glass flex flex-col sm:flex-row sm:items-center gap-6">
             <div>
               <div className="text-xs font-bold tracking-widest uppercase text-primary mb-1">Síguenos</div>
-              <h3 className="font-bold text-lg">Conéctate en redes sociales</h3>
+              <div className="font-bold text-lg">Conéctate en redes sociales</div>
             </div>
             <div className="flex flex-wrap gap-3 sm:ml-auto">
               {[

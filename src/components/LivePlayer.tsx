@@ -10,11 +10,92 @@ const DEFAULT_STREAM_URL = "https://sonic.paulatina.co/8036/stream";
 export function LivePlayer() {
   const { settings } = useSettings();
   const streamUrl = settings?.stream_url || DEFAULT_STREAM_URL;
-  const [playing, setPlaying] = useState(false);
-  const [volume, setVolume] = useState(70);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const soundRef = useRef<HowlType | null>(null);
+  const [songTitle, setSongTitle] = useState<string>("Ondas del Sur");
+  const [songArtist, setSongArtist] = useState<string>("La señal que nos une desde el corazón de Boyacá");
+  const [artwork, setArtwork] = useState<string | null>(null);
+  const [listeners, setListeners] = useState<number>(0);
+  const [fadeAnim, setFadeAnim] = useState(false);
+  
+  const currentTitleRef = useRef("Ondas del Sur");
+
+  useEffect(() => {
+    const fetchMetadata = async () => {
+      try {
+        const res = await fetch("https://corsproxy.io/?url=https://sonic.paulatina.co/8036/status-json.xsl");
+        const data = await res.json();
+        const source = data.icestats.source;
+        if (!source) throw new Error("No source");
+
+        if (source.listeners !== undefined) {
+          setListeners(source.listeners);
+        }
+
+        const fullTitle = source.title || "";
+        let newArtist = "Ondas del Sur";
+        let newTitle = "FM 106.6";
+
+        if (fullTitle.includes(" - ")) {
+          const parts = fullTitle.split(" - ");
+          newArtist = parts[0].trim();
+          newTitle = parts.slice(1).join(" - ").trim();
+        } else if (fullTitle) {
+          newTitle = fullTitle;
+          newArtist = "Ondas del Sur · FM 106.6";
+        }
+
+        if (newTitle !== currentTitleRef.current && fullTitle !== "") {
+          currentTitleRef.current = newTitle;
+          
+          let newArtwork = null;
+          try {
+            const dzQuery = encodeURIComponent(newArtist + " " + newTitle);
+            const dzUrl = `https://api.deezer.com/search?q=${dzQuery}&limit=1`;
+            const dzRes = await fetch(`https://corsproxy.io/?url=${encodeURIComponent(dzUrl)}`);
+            const dzData = await dzRes.json();
+            if (dzData.data && dzData.data.length > 0) {
+              newArtwork = dzData.data[0].album.cover_medium;
+            }
+          } catch (e) {
+            console.error("Deezer fetch error", e);
+          }
+
+          setFadeAnim(true);
+          
+          setTimeout(() => {
+            setSongTitle(newTitle);
+            setSongArtist(newArtist);
+            setArtwork(newArtwork);
+            setFadeAnim(false);
+          }, 300);
+        }
+      } catch (err) {
+        console.error("Metadata fetch error:", err);
+      }
+    };
+
+    fetchMetadata();
+    const interval = setInterval(fetchMetadata, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const AnimatedNumber = ({ value }: { value: number }) => {
+    const [display, setDisplay] = useState(value);
+    useEffect(() => {
+      let start = display;
+      const end = value;
+      if (start === end) return;
+      const duration = 1000;
+      let startTime: number | null = null;
+      const step = (timestamp: number) => {
+        if (!startTime) startTime = timestamp;
+        const progress = Math.min((timestamp - startTime) / duration, 1);
+        setDisplay(Math.floor(progress * (end - start) + start));
+        if (progress < 1) window.requestAnimationFrame(step);
+      };
+      window.requestAnimationFrame(step);
+    }, [value]);
+    return <span>{display}</span>;
+  };
 
   useEffect(() => {
     return () => {
@@ -91,11 +172,36 @@ export function LivePlayer() {
             {/* Album/cover */}
             <div className="relative shrink-0">
               <div className="absolute inset-0 bg-gradient-brand blur-2xl opacity-50" />
-              <div className="relative h-44 w-44 lg:h-56 lg:w-56 rounded-2xl bg-gradient-brand flex items-center justify-center shadow-glow overflow-hidden">
-                <div className={`absolute inset-0 ${playing ? "animate-spin" : ""}`} style={{ animationDuration: "20s" }}>
-                  <div className="absolute inset-4 rounded-full border-2 border-dashed border-primary-foreground/30" />
+              <div className="relative h-44 w-44 lg:h-56 lg:w-56 rounded-2xl bg-card border border-border flex items-center justify-center shadow-glow overflow-hidden group">
+                
+                {/* Fallback / Background */}
+                <div className={`absolute inset-0 bg-gradient-brand transition-opacity duration-500 ${artwork ? 'opacity-0' : 'opacity-100'}`} />
+                {!artwork && (
+                  <>
+                    <div className={`absolute inset-0 ${playing ? "animate-spin" : ""}`} style={{ animationDuration: "20s" }}>
+                      <div className="absolute inset-4 rounded-full border-2 border-dashed border-primary-foreground/30" />
+                    </div>
+                    <span className="relative text-6xl lg:text-7xl font-black text-primary-foreground">106.6</span>
+                  </>
+                )}
+
+                {/* Artwork */}
+                {artwork && (
+                  <img 
+                    src={artwork} 
+                    alt={songTitle} 
+                    className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${fadeAnim ? 'opacity-0' : 'opacity-100'}`}
+                    onError={(e) => {
+                       (e.target as HTMLImageElement).src = "https://placehold.co/300x300/1E293B/white?text=🎵";
+                    }}
+                  />
+                )}
+                
+                {/* Live pulsing badge on artwork */}
+                <div className="absolute top-3 right-3 px-2 py-1 bg-live/90 backdrop-blur-md rounded border border-live-foreground/20 flex items-center gap-1.5 z-10 shadow-lg">
+                  <div className="w-1.5 h-1.5 rounded-full bg-live-foreground animate-pulse-live" />
+                  <span className="text-[9px] font-black tracking-widest text-live-foreground uppercase">En vivo</span>
                 </div>
-                <span className="relative text-6xl lg:text-7xl font-black text-primary-foreground">106.6</span>
               </div>
             </div>
 
@@ -106,12 +212,17 @@ export function LivePlayer() {
                 <span className="text-xs text-muted-foreground tracking-widest uppercase">
                   {playing ? "En vivo · FM 106.6" : "Ahora suena"}
                 </span>
+                <span className="text-xs font-bold text-primary ml-auto lg:ml-0 bg-primary/10 px-2 py-1 rounded-md">
+                  👥 <AnimatedNumber value={listeners} /> oyentes ahora
+                </span>
               </div>
 
-              <h3 className="text-2xl lg:text-4xl font-black mb-1">Ondas del Sur</h3>
-              <p className="text-muted-foreground mb-6">
-                La señal que nos une desde el corazón de Boyacá · <span className="text-primary font-semibold">106.6 FM Stereo</span>
-              </p>
+              <div className={`transition-all duration-300 ${fadeAnim ? "opacity-0 -translate-x-4" : "opacity-100 translate-x-0"}`}>
+                <h3 className="text-2xl lg:text-4xl font-black mb-1 line-clamp-1" title={songTitle}>{songTitle}</h3>
+                <p className="text-muted-foreground mb-6 line-clamp-1" title={songArtist}>
+                  {songArtist}
+                </p>
+              </div>
 
               {/* Error message */}
               {error && (
@@ -125,7 +236,7 @@ export function LivePlayer() {
                 <button
                   onClick={togglePlay}
                   disabled={loading}
-                  aria-label={playing ? "Pausar" : "Reproducir"}
+                  aria-label={playing ? "Pausar reproducción" : "Reproducir radio en vivo"}
                   className={`h-16 w-16 lg:h-20 lg:w-20 rounded-full bg-gradient-brand flex items-center justify-center shadow-glow hover:scale-105 transition-transform ${loading ? "opacity-70 cursor-wait" : ""}`}
                 >
                   {loading ? (
@@ -151,10 +262,14 @@ export function LivePlayer() {
 
               {/* Volume */}
               <div className="flex items-center gap-3 max-w-sm mx-auto lg:mx-0">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" className="text-muted-foreground shrink-0">
-                  <path d="M3 9v6h4l5 5V4L7 9H3z" />
-                </svg>
+                <label htmlFor="volume-slider" className="sr-only">Control de volumen</label>
+                <button aria-label="Control de volumen" className="shrink-0" onClick={() => setVolume(volume === 0 ? 70 : 0)}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" className="text-muted-foreground">
+                    <path d="M3 9v6h4l5 5V4L7 9H3z" />
+                  </svg>
+                </button>
                 <input
+                  id="volume-slider"
                   type="range"
                   min={0}
                   max={100}

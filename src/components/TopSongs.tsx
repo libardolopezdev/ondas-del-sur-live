@@ -218,6 +218,7 @@ export function TopSongs() {
                     <button 
                       onClick={() => handlePlay(i)}
                       disabled={loadingId === i}
+                      aria-label={currentId === i && playing ? "Pausar reproducción" : "Reproducir canción"}
                       className={`h-12 w-12 rounded-full flex items-center justify-center transition shadow-lg ${
                         currentId === i && playing
                           ? "bg-primary text-primary-foreground"

@@ -1,4 +1,5 @@
-import logo from "@/assets/logo-v4.webp";
+import logo137 from "@/assets/logo-137w.webp";
+import logo274 from "@/assets/logo-274w.webp";
 
 export function Footer() {
   return (
@@ -7,7 +8,16 @@ export function Footer() {
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-border">
           <div className="lg:col-span-2">
             <div className="flex items-center gap-3 mb-4">
-              <img src={logo} alt="Ondas del Sur" className="h-16 sm:h-20 w-auto object-contain rounded-[10%] shadow-glow" loading="lazy" />
+              <img 
+                src={logo137} 
+                srcSet={`${logo137} 137w, ${logo274} 274w`}
+                sizes="(min-width: 640px) 160px, 137px"
+                width={137}
+                height={64}
+                alt="Ondas del Sur" 
+                className="h-16 sm:h-20 w-auto object-contain rounded-[10%] shadow-glow" 
+                loading="lazy" 
+              />
             </div>
             <p className="text-muted-foreground max-w-md leading-relaxed">
               Emisora comunitaria al servicio de Sativasur, Boyacá. La verdadera emisora del pueblo, transmitiendo música, noticias y la voz de nuestra gente las 24 horas del día.

@@ -31,12 +31,31 @@ export function TopSongs() {
   const fetchPreview = async (index: number) => {
     const song = songs[index];
     const query = encodeURIComponent(`${song.artist} ${song.title}`);
-    const proxyUrl = `https://corsproxy.io/?url=https://api.deezer.com/search?q=${query}&limit=1`;
+    const deezerUrl = `https://api.deezer.com/search?q=${query}&limit=1`;
 
     try {
       setLoadingId(index);
-      const response = await fetch(proxyUrl);
-      const data = await response.json();
+      
+      // Utilizando JSONP para evitar problemas de CORS de forma nativa sin proxies
+      const data = await new Promise<any>((resolve, reject) => {
+        const callbackName = 'deezer_jsonp_' + Math.round(1000000 * Math.random());
+        const script = document.createElement('script');
+        script.src = `${deezerUrl}&output=jsonp&callback=${callbackName}`;
+        
+        (window as any)[callbackName] = (response: any) => {
+          delete (window as any)[callbackName];
+          document.body.removeChild(script);
+          resolve(response);
+        };
+        
+        script.onerror = () => {
+          delete (window as any)[callbackName];
+          document.body.removeChild(script);
+          reject(new Error("JSONP failed"));
+        };
+        
+        document.body.appendChild(script);
+      });
       
       if (data.data && data.data.length > 0) {
         const previewUrl = data.data[0].preview;
@@ -48,6 +67,7 @@ export function TopSongs() {
       }
     } catch (error) {
       console.error("Error fetching Deezer preview:", error);
+      setPreviews(prev => ({ ...prev, [index]: null }));
       return null;
     } finally {
       setLoadingId(null);

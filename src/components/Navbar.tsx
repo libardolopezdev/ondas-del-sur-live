@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import logo from "@/assets/logo.webp";
+import logo from "@/assets/logo-v4.webp";
 
 const links = [
   { href: "#en-vivo", label: "En vivo" },
@@ -29,12 +29,12 @@ export function Navbar() {
       }`}
     >
       <nav className="max-w-7xl mx-auto px-5 lg:px-8 h-16 lg:h-20 flex items-center justify-between">
-        <a href="#hero" className="flex items-center gap-3 group">
-          <img src={logo} alt="Ondas del Sur" width={40} height={40} className="h-10 w-10 object-contain" />
-          <div className="hidden sm:flex flex-col leading-tight">
-            <span className="text-sm font-bold tracking-wide">Ondas del Sur</span>
-            <span className="text-[10px] text-primary font-semibold tracking-widest">106.6 FM STEREO</span>
-          </div>
+        <a href="#hero" className="flex items-center gap-3 group relative">
+          <img 
+            src={logo} 
+            alt="Ondas del Sur" 
+            className="h-12 sm:h-14 w-auto object-contain rounded-[10%] shadow-glow transition-transform group-hover:scale-105" 
+          />
         </a>
 
         <ul className="hidden lg:flex items-center gap-7">

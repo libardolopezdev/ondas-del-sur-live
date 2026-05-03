@@ -1,4 +1,5 @@
 import heroBg from "@/assets/hero-bg.webp";
+
 import { Equalizer } from "./Equalizer";
 import { LiveBadge } from "./LiveBadge";
 
@@ -42,10 +43,14 @@ export function Hero() {
             </span>
           </div>
 
-          <h1 className="text-5xl sm:text-6xl lg:text-8xl font-black leading-[0.95] mb-6 animate-fade-up" style={{ animationDelay: "0.1s" }}>
-            La Verdadera <br />
-            <span className="text-gradient-brand">Emisora del Pueblo</span>
+          <h1 className="text-5xl sm:text-6xl lg:text-8xl font-black leading-[0.95] mb-4 animate-fade-up" style={{ animationDelay: "0.1s" }}>
+            Ondas del Sur <br />
+            <span className="text-gradient-brand">106.6 FM</span>
           </h1>
+          
+          <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground/90 tracking-wide mb-6 animate-fade-up" style={{ animationDelay: "0.15s" }}>
+            La verdadera emisora del pueblo
+          </h2>
 
           <p className="text-lg lg:text-xl text-muted-foreground max-w-xl mb-10 animate-fade-up" style={{ animationDelay: "0.2s" }}>
             Música, información y la voz de nuestra comunidad sonando 24/7 en{" "}

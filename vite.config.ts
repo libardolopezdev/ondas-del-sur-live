@@ -13,4 +13,13 @@ export default defineConfig({
     tailwindcss(),
     tsconfigPaths(),
   ],
+  server: {
+    proxy: {
+      "/deezer-api": {
+        target: "https://api.deezer.com",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/deezer-api/, ""),
+      },
+    },
+  },
 });

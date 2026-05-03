@@ -21,3 +21,9 @@
   [headers.values]
     Cache-Control = "public, max-age=86400"
 
+[[redirects]]
+  from = "/deezer-api/*"
+  to = "https://api.deezer.com/:splat"
+  status = 200
+  force = true
+

@@ -10,10 +10,15 @@ const DEFAULT_STREAM_URL = "https://sonic.paulatina.co/8036/stream";
 export function LivePlayer() {
   const { settings } = useSettings();
   const streamUrl = settings?.stream_url || DEFAULT_STREAM_URL;
+  const [playing, setPlaying] = useState(false);
+  const [volume, setVolume] = useState(70);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const soundRef = useRef<HowlType | null>(null);
+
   const [songTitle, setSongTitle] = useState<string>("Ondas del Sur");
   const [songArtist, setSongArtist] = useState<string>("La señal que nos une desde el corazón de Boyacá");
   const [artwork, setArtwork] = useState<string | null>(null);
-  const [listeners, setListeners] = useState<number>(0);
   const [fadeAnim, setFadeAnim] = useState(false);
   
   const currentTitleRef = useRef("Ondas del Sur");
@@ -22,13 +27,20 @@ export function LivePlayer() {
     const fetchMetadata = async () => {
       try {
         const res = await fetch("https://corsproxy.io/?url=https://sonic.paulatina.co/8036/status-json.xsl");
-        const data = await res.json();
-        const source = data.icestats.source;
-        if (!source) throw new Error("No source");
-
-        if (source.listeners !== undefined) {
-          setListeners(source.listeners);
+        const text = await res.text();
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch (e) {
+          throw new Error("Invalid JSON response");
         }
+        
+        if (!data?.icestats?.source) throw new Error("No source in icestats");
+        
+        const sources = Array.isArray(data.icestats.source) ? data.icestats.source : [data.icestats.source];
+        const source = sources.find(s => s && s.title) || sources[0];
+        
+        if (!source) throw new Error("No valid source found");
 
         const fullTitle = source.title || "";
         let newArtist = "Ondas del Sur";
@@ -77,25 +89,6 @@ export function LivePlayer() {
     const interval = setInterval(fetchMetadata, 30000);
     return () => clearInterval(interval);
   }, []);
-
-  const AnimatedNumber = ({ value }: { value: number }) => {
-    const [display, setDisplay] = useState(value);
-    useEffect(() => {
-      let start = display;
-      const end = value;
-      if (start === end) return;
-      const duration = 1000;
-      let startTime: number | null = null;
-      const step = (timestamp: number) => {
-        if (!startTime) startTime = timestamp;
-        const progress = Math.min((timestamp - startTime) / duration, 1);
-        setDisplay(Math.floor(progress * (end - start) + start));
-        if (progress < 1) window.requestAnimationFrame(step);
-      };
-      window.requestAnimationFrame(step);
-    }, [value]);
-    return <span>{display}</span>;
-  };
 
   useEffect(() => {
     return () => {
@@ -211,9 +204,6 @@ export function LivePlayer() {
                 <LiveBadge />
                 <span className="text-xs text-muted-foreground tracking-widest uppercase">
                   {playing ? "En vivo · FM 106.6" : "Ahora suena"}
-                </span>
-                <span className="text-xs font-bold text-primary ml-auto lg:ml-0 bg-primary/10 px-2 py-1 rounded-md">
-                  👥 <AnimatedNumber value={listeners} /> oyentes ahora
                 </span>
               </div>
 

@@ -68,7 +68,7 @@ export function LivePlayer() {
               newArtwork = dzData.data[0].album.cover_medium;
             }
           } catch (e) {
-            console.error("Deezer fetch error", e);
+            // Silently ignore deezer fetch errors
           }
 
           setFadeAnim(true);
@@ -81,7 +81,7 @@ export function LivePlayer() {
           }, 300);
         }
       } catch (err) {
-        console.error("Metadata fetch error:", err);
+        // Silently ignore metadata fetch errors to prevent console noise
       }
     };
 

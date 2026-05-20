@@ -20,7 +20,7 @@ export function Footer() {
               />
             </div>
             <p className="text-muted-foreground max-w-md leading-relaxed">
-              Emisora comunitaria al servicio de Sativasur, Boyacá. La verdadera emisora del pueblo, transmitiendo música, noticias y la voz de nuestra gente las 24 horas del día.
+              <a href="https://es.wikipedia.org/wiki/Radio_comunitaria" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Emisora comunitaria</a> al servicio de <a href="https://es.wikipedia.org/wiki/Sativasur" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Sativasur, Boyacá</a>. La verdadera emisora del pueblo, transmitiendo música, noticias y la voz de nuestra gente las 24 horas del día.
             </p>
           </div>
 
@@ -61,7 +61,7 @@ export function Footer() {
         </div>
 
         <div className="pt-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4 text-xs text-muted-foreground">
-          <p>© {new Date().getFullYear()} Ondas del Sur 106.6 FM Stereo. Todos los derechos reservados.</p>
+          <p>© {new Date().getFullYear()} Ondas del Sur <a href="https://es.wikipedia.org/wiki/Frecuencia_modulada" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">106.6 FM</a> Stereo. Todos los derechos reservados.</p>
           <p className="tracking-widest uppercase">La Verdadera Emisora del Pueblo</p>
         </div>
       </div>

@@ -164,12 +164,12 @@ export function TopSongs() {
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-4">
+        <ol className="grid lg:grid-cols-2 gap-4">
           {loadingSongs ? (
             <div className="col-span-full text-center py-12 text-slate-500 animate-pulse">Cargando ranking...</div>
           ) : (
             songs.map((s, i) => (
-              <div
+              <li
                 key={i}
                 className={`group relative flex flex-col rounded-2xl border transition-all overflow-hidden max-w-full ${
                   currentId === i 
@@ -244,10 +244,10 @@ export function TopSongs() {
                     />
                   </div>
                 )}
-              </div>
+              </li>
             ))
           )}
-        </div>
+        </ol>
 
         <div className="mt-12 text-center">
           <p className="text-xs font-medium text-muted-foreground italic">

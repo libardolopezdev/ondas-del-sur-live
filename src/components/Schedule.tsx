@@ -145,6 +145,99 @@ export function Schedule() {
             <div className="text-center py-20 text-muted-foreground italic">No hay programas programados para hoy.</div>
           )}
         </div>
+        <div className="my-24 border-t border-border/50" />
+
+        <div className="mb-12">
+          <span className="text-xs font-bold tracking-[0.3em] text-primary uppercase">Categorías</span>
+          <h2 className="text-4xl lg:text-5xl font-black mt-3">Géneros en parrilla</h2>
+          <p className="text-muted-foreground mt-3 max-w-lg">Conoce los tipos de contenido que suenan en Ondas del Sur 106.6 FM</p>
+        </div>
+
+        <style>{`
+          @keyframes radio-wave {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+          }
+          .table-row-wave {
+            background-image: linear-gradient(90deg, transparent 0%, transparent 40%, rgba(255, 118, 38, 0.25) 50%, transparent 60%, transparent 100%);
+            background-size: 200% 100%;
+            background-repeat: no-repeat;
+            background-position: -200% 0;
+            transition: background-color 0.3s ease;
+          }
+          .table-row-wave:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            animation: radio-wave 1.5s linear infinite;
+          }
+        `}</style>
+        <div className="w-full rounded-xl border border-border bg-card/20 backdrop-blur-md overflow-hidden">
+          {/* Vista Desktop (Tabla) */}
+          <div className="hidden md:block w-full overflow-x-auto">
+            <table className="w-full text-left border-collapse min-w-[700px]">
+              <thead className="text-primary-foreground" style={{ backgroundColor: '#ff7626' }}>
+                <tr>
+                  <th className="p-4 font-bold border-b border-border/50">Categoría</th>
+                  <th className="p-4 font-bold border-b border-border/50">Descripción</th>
+                  <th className="p-4 font-bold border-b border-border/50">Horario Habitual</th>
+                  <th className="p-4 font-bold border-b border-border/50">Popularidad</th>
+                </tr>
+              </thead>
+              <tbody className="text-sm text-muted-foreground">
+                {[
+                  { name: 'Música', color: '#ff7626', desc: 'La mejor selección de éxitos, baladas y ritmos de nuestra tierra.', time: 'Todo el día', pop: 90 },
+                  { name: 'Noticias', color: '#ff9f5a', desc: 'Información local y regional para mantenerte siempre al día.', time: 'Mañanas y mediodía', pop: 75 },
+                  { name: 'Comunidad', color: '#ffb347', desc: 'Espacios de participación ciudadana y voz de nuestros barrios.', time: 'Tardes', pop: 60 },
+                  { name: 'Interactivo', color: '#e85d04', desc: 'Concursos, saludos, complacencias y mucha diversión en vivo.', time: 'Fines de semana', pop: 80 }
+                ].map((cat, i, arr) => (
+                  <tr key={i} className={`table-row-wave ${i !== arr.length - 1 ? 'border-b border-border/50' : ''}`}>
+                    <td className="p-4 font-semibold" style={{ color: cat.color }}>
+                      <div className="flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full" style={{ backgroundColor: cat.color }} /> {cat.name}
+                      </div>
+                    </td>
+                    <td className="p-4">{cat.desc}</td>
+                    <td className="p-4">{cat.time}</td>
+                    <td className="p-4">
+                      <div className="flex items-center gap-3">
+                        <div className="h-2 flex-grow bg-slate-800 rounded-full overflow-hidden">
+                          <div className="h-full rounded-full transition-all duration-1000 ease-out" style={{ width: `${cat.pop}%`, backgroundColor: cat.color }}></div>
+                        </div>
+                        <span className="text-xs font-bold w-8 text-foreground">{cat.pop}%</span>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Vista Móvil (Tarjetas) */}
+          <div className="md:hidden flex flex-col divide-y divide-border/50">
+            {[
+              { name: 'Música', color: '#ff7626', desc: 'La mejor selección de éxitos, baladas y ritmos de nuestra tierra.', time: 'Todo el día', pop: 90 },
+              { name: 'Noticias', color: '#ff9f5a', desc: 'Información local y regional para mantenerte siempre al día.', time: 'Mañanas y mediodía', pop: 75 },
+              { name: 'Comunidad', color: '#ffb347', desc: 'Espacios de participación ciudadana y voz de nuestros barrios.', time: 'Tardes', pop: 60 },
+              { name: 'Interactivo', color: '#e85d04', desc: 'Concursos, saludos, complacencias y mucha diversión en vivo.', time: 'Fines de semana', pop: 80 }
+            ].map((cat, i) => (
+              <div key={i} className="p-5 table-row-wave">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="font-bold text-lg flex items-center gap-2" style={{ color: cat.color }}>
+                    <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: cat.color }} /> {cat.name}
+                  </div>
+                  <span className="text-xs px-2 py-1 rounded-md bg-white/5 border border-white/10 text-muted-foreground whitespace-nowrap ml-3">{cat.time}</span>
+                </div>
+                <p className="text-sm text-muted-foreground mb-4">{cat.desc}</p>
+                <div className="flex items-center gap-3">
+                  <span className="text-xs font-medium text-muted-foreground">Popularidad</span>
+                  <div className="h-1.5 flex-grow bg-slate-800 rounded-full overflow-hidden">
+                    <div className="h-full rounded-full transition-all duration-1000 ease-out" style={{ width: `${cat.pop}%`, backgroundColor: cat.color }}></div>
+                  </div>
+                  <span className="text-xs font-bold text-foreground w-8">{cat.pop}%</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   );

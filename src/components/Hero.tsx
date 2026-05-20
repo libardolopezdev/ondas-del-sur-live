@@ -75,43 +75,48 @@ export function Hero() {
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
             </a>
           </div>
-
-          {/* Stats strip */}
-          <div className="mt-16 grid grid-cols-3 gap-6 max-w-xl animate-fade-up" style={{ animationDelay: "0.4s" }}>
-            {[
-              { v: "106.6", l: "FM Stereo" },
-              { v: "24/7", l: "Transmisión" },
-              { v: "+10K", l: "Oyentes" },
-            ].map((s) => (
-              <div key={s.l} className="border-l-2 border-primary/60 pl-4">
-                <div className="text-2xl lg:text-3xl font-black text-gradient-brand">{s.v}</div>
-                <div className="text-xs text-muted-foreground tracking-widest uppercase mt-1">{s.l}</div>
-              </div>
-            ))}
-          </div>
         </div>
+
+        {/* Stats strip */}
+        <div className="mt-20 w-full animate-fade-up" style={{ animationDelay: "0.4s" }}>
+          <div className="text-center mb-10">
+              <span className="text-xs font-bold tracking-[0.3em] uppercase block mb-3" style={{ color: '#ff7626' }}>| NUESTRA RADIO |</span>
+              <h3 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white">
+                MÚSICA QUE TE<br />
+                <span style={{ color: '#ff7626' }}>ACOMPAÑA SIEMPRE</span>
+              </h3>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', gap: '16px' }}>
+              {[
+                { 
+                  v: "106.6", 
+                  l: "FM Stereo",
+                  icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect><line x1="17" y1="2" x2="17" y2="7"></line><rect x="6" y="11" width="4" height="7"></rect><rect x="14" y="11" width="4" height="7"></rect></svg>
+                },
+                { 
+                  v: "24/7", 
+                  l: "Transmisión",
+                  icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4.9 19.1C3.1 17.3 2 14.8 2 12s1.1-5.3 2.9-7.1"/><path d="M19.1 4.9C20.9 6.7 22 9.2 22 12s-1.1 5.3-2.9 7.1"/><path d="M8.5 15.5C7.3 14.3 6.5 12.7 6.5 11s.8-3.3 2-4.5"/><path d="M15.5 8.5C16.7 9.7 17.5 11.3 17.5 13s-.8 3.3-2 4.5"/><circle cx="12" cy="12" r="2"/></svg>
+                },
+                { 
+                  v: "+10K", 
+                  l: "Oyentes",
+                  icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                },
+              ].map((s) => (
+                <div key={s.l} className="flex flex-col items-center text-center transition-transform hover:scale-105" style={{ backgroundColor: '#1a1a2e', border: '1px solid rgba(255,118,38,0.3)', borderRadius: '16px', padding: '24px', minWidth: '100px', flex: '1', maxWidth: '200px' }}>
+                  <div className="flex items-center justify-center rounded-full mb-4 shrink-0" style={{ width: '60px', height: '60px', border: '1px solid #ff7626', color: '#ff7626' }}>
+                    {s.icon}
+                  </div>
+                  <div className="text-2xl lg:text-3xl font-black text-white">{s.v}</div>
+                  <div className="text-xs text-muted-foreground tracking-widest uppercase mt-1">{s.l}</div>
+                  <div style={{ width: '30px', height: '2px', backgroundColor: '#ff7626', marginTop: '16px' }} />
+                </div>
+              ))}
+            </div>
+          </div>
       </div>
 
-      {/* Bottom waveform */}
-      <div className="absolute bottom-0 inset-x-0 h-24 flex items-end justify-center gap-[2px] px-4 opacity-40 pointer-events-none">
-        {Array.from({ length: 120 }).map((_, i) => (
-          <span
-            key={i}
-            className="w-[3px] bg-gradient-to-t from-primary to-transparent rounded-full animate-equalizer"
-            style={{
-              animationDelay: `${(i % 12) * 0.08}s`,
-              animationDuration: `${0.8 + (i % 5) * 0.15}s`,
-              height: `${10 + ((i * 7) % 60)}%`,
-              transformOrigin: "bottom",
-            }}
-          />
-        ))}
-      </div>
-
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-muted-foreground">
-        <span className="text-[10px] tracking-[0.3em] uppercase">Scroll</span>
-        <span className="block h-8 w-px bg-gradient-to-b from-primary to-transparent" />
-      </div>
     </section>
   );
 }

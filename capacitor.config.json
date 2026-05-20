@@ -1,0 +1,6 @@
+{
+  "appId": "com.ondasdelsur.live",
+  "appName": "Ondas del Sur Live",
+  "webDir": "dist",
+  "bundledWebRuntime": false
+}

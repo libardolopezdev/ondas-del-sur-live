@@ -38,7 +38,7 @@ function Index() {
         <Hero />
         <LivePlayer />
         <Schedule />
-        <VideoDemo />
+        {/* <VideoDemo /> */}
         <TopSongs />
         <News />
         <Community />

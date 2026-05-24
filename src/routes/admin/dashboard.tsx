@@ -90,6 +90,7 @@ function DashboardPage() {
   const tabs = [
     { id: "programacion", label: "Programación", icon: "📻" },
     { id: "noticias", label: "Noticias", icon: "📰" },
+    { id: "newsapi", label: "Noticias de NewsAPI", icon: "🌐" },
     { id: "galeria", label: "Galería", icon: "📸" },
     { id: "equipo", label: "Equipo", icon: "👥" },
     { id: "servicios", label: "Servicios", icon: "📢" },
@@ -165,6 +166,7 @@ function DashboardPage() {
         <div className="max-w-6xl">
           {activeTab === "programacion" && <AdminShows />}
           {activeTab === "noticias" && <AdminNews />}
+          {activeTab === "newsapi" && <AdminNewsApi />}
           {activeTab === "galeria" && <AdminGallery />}
           {activeTab === "equipo" && <AdminTeam />}
           {activeTab === "servicios" && <AdminSocialServices />}
@@ -1426,3 +1428,75 @@ function AdminFeaturedPrograms() {
   );
 }
 
+function AdminNewsApi() {
+  const [news, setNews] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchNews();
+  }, []);
+
+  async function fetchNews() {
+    setLoading(true);
+    const { data } = await supabase
+      .from("news")
+      .select("*")
+      .eq("published", false)
+      .order("date", { ascending: false });
+    if (data) setNews(data);
+    setLoading(false);
+  }
+
+  const publishNews = async (id: string) => {
+    if (confirm("¿Estás seguro de publicar esta noticia?")) {
+      await supabase.from("news").update({ published: true }).eq("id", id);
+      fetchNews();
+    }
+  };
+
+  const deleteNews = async (id: string) => {
+    if (confirm("¿Estás seguro de eliminar esta noticia?")) {
+      await supabase.from("news").delete().eq("id", id);
+      fetchNews();
+    }
+  };
+
+  if (loading && news.length === 0) return <div className="text-slate-500 animate-pulse">Cargando noticias pendientes...</div>;
+
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h3 className="text-xl font-bold">Noticias de NewsAPI</h3>
+      </div>
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {news.map((item) => (
+          <div key={item.id} className="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden flex flex-col">
+            {item.image_url ? (
+              <div className="h-40 bg-slate-800 relative">
+                <img src={item.image_url} className="w-full h-full object-cover" alt="" />
+                <div className="absolute top-3 left-3 px-2 py-1 bg-primary text-[10px] font-black text-primary-foreground rounded uppercase">{item.category}</div>
+              </div>
+            ) : (
+              <div className="h-40 bg-slate-800 relative flex items-center justify-center">
+                <span className="text-slate-500 text-xs font-bold uppercase tracking-widest">Sin imagen</span>
+                <div className="absolute top-3 left-3 px-2 py-1 bg-primary text-[10px] font-black text-primary-foreground rounded uppercase">{item.category}</div>
+              </div>
+            )}
+            <div className="p-5 flex-1 flex flex-col">
+              <h4 className="font-bold mb-2 line-clamp-2">{item.title}</h4>
+              <p className="text-slate-500 text-[10px] mb-2 font-bold uppercase tracking-widest">
+                {new Date(item.date || new Date()).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })}
+              </p>
+              <p className="text-slate-500 text-xs line-clamp-3 mb-4">{item.body}</p>
+              <div className="flex justify-between mt-auto gap-3">
+                <button onClick={() => publishNews(item.id)} className="flex-1 text-emerald-400 hover:text-emerald-300 transition text-sm font-bold bg-emerald-500/10 py-2 rounded-lg text-center">Publicar</button>
+                <button onClick={() => deleteNews(item.id)} className="flex-1 text-red-400 hover:text-red-300 transition text-sm font-bold bg-red-500/10 py-2 rounded-lg text-center">Eliminar</button>
+              </div>
+            </div>
+          </div>
+        ))}
+        {news.length === 0 && <div className="col-span-full p-10 text-center text-slate-500 italic">No hay noticias pendientes de NewsAPI.</div>}
+      </div>
+    </div>
+  );
+}

@@ -56,10 +56,12 @@ export function News() {
                   </div>
                   <h3 className="text-xl font-bold mb-3 group-hover:text-primary transition leading-tight">{n.title}</h3>
                   <p className="text-sm text-muted-foreground mb-4 line-clamp-3">{n.body}</p>
-                  <a href="#" className="inline-flex items-center gap-2 text-sm font-semibold text-primary">
-                    Leer más
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-                  </a>
+                  {n.url && (
+                    <a href={n.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm font-semibold text-primary cursor-pointer">
+                      Leer más
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+                    </a>
+                  )}
                 </div>
               </article>
             ))

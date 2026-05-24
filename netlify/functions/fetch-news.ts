@@ -59,6 +59,7 @@ interface NewsArticle {
   title: string;
   description: string | null;
   urlToImage: string | null;
+  url: string;
   publishedAt: string;
 }
 
@@ -132,6 +133,7 @@ export default async function handler() {
       title: article.title,
       body: article.description ?? "",
       image_url: article.urlToImage ?? null,
+      url: article.url,
       category,
       date: article.publishedAt,
       published: false,

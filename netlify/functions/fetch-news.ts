@@ -3,8 +3,8 @@ import type { Config } from "@netlify/functions";
 
 // ── Supabase client (server-side, uses process.env) ──────────────────────────
 const supabase = createClient(
-  process.env.VITE_SUPABASE_URL!,
-  process.env.VITE_SUPABASE_ANON_KEY!
+  process.env.SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
 // ── Municipalities grouped by category ───────────────────────────────────────

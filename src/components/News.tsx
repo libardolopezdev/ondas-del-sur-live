@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { supabase } from "@/lib/supabase";
 
 export function News() {
@@ -27,7 +28,7 @@ export function News() {
             <span className="text-xs font-bold tracking-[0.3em] text-primary uppercase">Información</span>
             <h2 className="text-4xl lg:text-6xl font-black mt-3">Noticias y actualidad</h2>
           </div>
-          <a href="#" className="text-sm font-semibold text-primary hover:underline">Ver todas →</a>
+          <Link to="/noticias" className="text-sm font-semibold text-primary hover:underline">Ver todas →</Link>
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">

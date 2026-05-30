@@ -79,6 +79,7 @@ async function fetchArticles(query: string): Promise<NewsArticle[]> {
     language: "es",
     sortBy: "publishedAt",
     pageSize: "10",
+    domains: "eltiempo.com,elespectador.com,semana.com,caracol.com.co,caracoltv.com,rcnradio.com,noticiasrcn.com,bluradio.com,larepublica.co,portafolio.co,elcolombiano.com,elpais.com.co,vanguardia.com,elheraldo.co,eluniversal.com.co,las2orillas.co,pulzo.com,infobae.com/colombia,noticias.canal1.com.co,canalrcn.com,minuto30.com,kienyke.com,lafm.com.co,wradio.com.co,colombiacheck.com,cromos.com.co,boyacacultural.gov.co,extra.com.co,hsbnoticias.com,colombia.com",
     apiKey,
   });
 
@@ -137,6 +138,7 @@ export default async function handler() {
       category,
       date: article.publishedAt,
       published: false,
+      source: "newsapi",
     });
 
     if (error) {

@@ -186,3 +186,65 @@
   transition: transform 0.4s var(--transition-smooth), box-shadow 0.4s var(--transition-smooth);
 }
 .hover-lift:hover { transform: translateY(-6px); box-shadow: var(--shadow-elevated); }
+
+/* Quill Dark Mode Overrides */
+.quill-dark .ql-toolbar {
+  border-color: #334155 !important;
+  background-color: #0f172a;
+  border-bottom: 1px solid #334155 !important;
+  border-top-left-radius: 0.75rem;
+  border-top-right-radius: 0.75rem;
+}
+.quill-dark .ql-container {
+  border-color: #334155 !important;
+  background-color: #1e293b;
+  color: white;
+  min-height: 200px;
+  border-bottom-left-radius: 0.75rem;
+  border-bottom-right-radius: 0.75rem;
+}
+.quill-dark .ql-editor {
+  min-height: 200px;
+}
+.quill-dark .ql-stroke {
+  stroke: #94a3b8 !important;
+}
+.quill-dark .ql-fill, .quill-dark .ql-stroke.ql-fill {
+  fill: #94a3b8 !important;
+}
+.quill-dark .ql-picker {
+  color: #94a3b8 !important;
+}
+.quill-dark .ql-picker-options {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+}
+.quill-dark button:hover .ql-stroke { stroke: #ff7626 !important; }
+.quill-dark button:hover .ql-fill { fill: #ff7626 !important; }
+.quill-dark .ql-active .ql-stroke { stroke: #ff7626 !important; }
+.quill-dark .ql-active .ql-fill { fill: #ff7626 !important; }
+
+/* Rich Text Typography Fixes */
+.prose { 
+  word-wrap: break-word; 
+  overflow-wrap: anywhere; 
+  white-space: normal; 
+}
+.prose * { 
+  white-space: normal !important; 
+  word-wrap: break-word !important; 
+  overflow-wrap: anywhere !important; 
+}
+.prose b, .prose strong { font-weight: 700; color: inherit; }
+.prose i, .prose em { font-style: italic; }
+.prose u { text-decoration: underline; }
+.prose s, .prose strike { text-decoration: line-through; }
+.prose ul { list-style-type: disc; padding-left: 1.5rem; margin: 0.5rem 0; }
+.prose ol { list-style-type: decimal; padding-left: 1.5rem; margin: 0.5rem 0; }
+.prose li { margin-bottom: 0.25rem; }
+.prose h1 { font-size: 1.5rem; font-weight: 800; margin: 1rem 0 0.5rem; color: inherit; }
+.prose h2 { font-size: 1.25rem; font-weight: 700; margin: 1rem 0 0.5rem; color: inherit; }
+.prose h3 { font-size: 1.125rem; font-weight: 700; margin: 1rem 0 0.5rem; color: inherit; }
+.prose a { color: var(--color-primary); text-decoration: underline; }
+.prose p { margin-bottom: 0.75rem; }
+.prose p:last-child { margin-bottom: 0; }

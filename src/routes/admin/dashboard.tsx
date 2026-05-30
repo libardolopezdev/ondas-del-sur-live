@@ -15,6 +15,11 @@ const IntroSteps = lazy(() =>
   })
 );
 
+const ReactQuill = lazy(() => import("react-quill-new").then(m => {
+  import("react-quill-new/dist/quill.snow.css");
+  return { default: m.default };
+}));
+
 export const Route = createFileRoute("/admin/dashboard")({
   component: DashboardPage,
 });
@@ -116,11 +121,10 @@ function DashboardPage() {
               key={tab.id}
               id={`tab-${tab.id}`}
               onClick={() => setActiveTab(tab.id)}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${
-                activeTab === tab.id
-                  ? "bg-primary text-primary-foreground shadow-glow"
-                  : "text-slate-400 hover:bg-slate-800 hover:text-white"
-              }`}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${activeTab === tab.id
+                ? "bg-primary text-primary-foreground shadow-glow"
+                : "text-slate-400 hover:bg-slate-800 hover:text-white"
+                }`}
             >
               <span className="text-xl">{tab.icon}</span>
               {tab.label}
@@ -218,14 +222,14 @@ function AdminShows() {
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [currentShow, setCurrentShow] = useState<any>(null);
-  const [formData, setFormData] = useState({ 
-    title: "", 
-    host: "", 
-    time_start: "08:00", 
-    time_end: "10:00", 
+  const [formData, setFormData] = useState({
+    title: "",
+    host: "",
+    time_start: "08:00",
+    time_end: "10:00",
     tag: "En vivo",
     days: "Lunes, Martes, Miércoles, Jueves, Viernes",
-    is_live: false 
+    is_live: false
   });
   const [autoShow, setAutoShow] = useState<any>(null);
   const [settings, setSettings] = useState<any>(null);
@@ -303,13 +307,13 @@ function AdminShows() {
     });
 
     if (conflict) {
-      setErrorMsg(`⚠️ Este horario se cruza con '${conflict.title}' que va de ${conflict.time_start.substring(0,5)} a ${conflict.time_end.substring(0,5)}. Por favor elige un horario diferente.`);
+      setErrorMsg(`⚠️ Este horario se cruza con '${conflict.title}' que va de ${conflict.time_start.substring(0, 5)} a ${conflict.time_end.substring(0, 5)}. Por favor elige un horario diferente.`);
       setConflictId(conflict.id);
       return;
     }
 
     setLoading(true);
-    
+
     if (currentShow) {
       await supabase.from("shows").update(formData).eq("id", currentShow.id);
     } else {
@@ -319,10 +323,10 @@ function AdminShows() {
     setIsEditing(false);
     setCurrentShow(null);
     setFormData({ title: "", host: "", time_start: "08:00", time_end: "10:00", tag: "En vivo", days: "Lunes a Viernes", is_live: false });
-    
+
     setSuccessMsg("✅ Programa agregado correctamente");
     setTimeout(() => setSuccessMsg(""), 3000);
-    
+
     fetchShows();
   };
 
@@ -348,14 +352,14 @@ function AdminShows() {
       <div className="flex justify-between items-center">
         <h3 className="text-xl font-bold">Parrilla de Programación</h3>
         {!isEditing && (
-          <button 
-            onClick={() => { 
-              setIsEditing(true); 
-              setCurrentShow(null); 
-              setFormData({ title: "", host: "", time_start: "08:00", time_end: "10:00", tag: "En vivo", days: "Lunes a Viernes", is_live: false }); 
-              setErrorMsg(""); 
-              setSuccessMsg(""); 
-              setConflictId(null); 
+          <button
+            onClick={() => {
+              setIsEditing(true);
+              setCurrentShow(null);
+              setFormData({ title: "", host: "", time_start: "08:00", time_end: "10:00", tag: "En vivo", days: "Lunes a Viernes", is_live: false });
+              setErrorMsg("");
+              setSuccessMsg("");
+              setConflictId(null);
             }}
             className="px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-bold hover:bg-emerald-500 transition"
           >
@@ -386,7 +390,7 @@ function AdminShows() {
 
       {isEditing ? (
         <form onSubmit={handleSave} className="bg-slate-900 border border-slate-800 rounded-3xl p-8 space-y-6 animate-fade-up">
-          
+
           {errorMsg && (
             <div className="p-4 bg-destructive/20 border border-destructive/50 text-destructive font-bold rounded-xl text-sm">
               {errorMsg}
@@ -470,8 +474,8 @@ function AdminShows() {
                   const left = (sStart / 1440) * 100;
                   const width = ((sEnd - sStart) / 1440) * 100;
                   return (
-                    <div 
-                      key={s.id} 
+                    <div
+                      key={s.id}
                       className="absolute top-0 bottom-0 bg-orange-500/80 border-l border-orange-400 group/tt"
                       style={{ left: `${left}%`, width: `${width}%` }}
                     >
@@ -481,14 +485,14 @@ function AdminShows() {
                     </div>
                   );
                 })}
-              
+
               {parseTime(formData.time_start) < parseTime(formData.time_end) && (
-                <div 
-                  className="absolute top-0 bottom-0 bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.8)] z-10 border-l-2 border-emerald-300" 
-                  style={{ 
-                    left: `${(parseTime(formData.time_start) / 1440) * 100}%`, 
-                    width: `${((parseTime(formData.time_end) - parseTime(formData.time_start)) / 1440) * 100}%` 
-                  }} 
+                <div
+                  className="absolute top-0 bottom-0 bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.8)] z-10 border-l-2 border-emerald-300"
+                  style={{
+                    left: `${(parseTime(formData.time_start) / 1440) * 100}%`,
+                    width: `${((parseTime(formData.time_end) - parseTime(formData.time_start)) / 1440) * 100}%`
+                  }}
                 />
               )}
             </div>
@@ -525,38 +529,37 @@ function AdminShows() {
                 let trClass = "transition hover:bg-slate-800/50";
                 if (isConflict) trClass = "transition bg-destructive/10 border-l-4 border-l-destructive";
                 else if (isAuto) trClass = "transition bg-primary/5 border-l-4 border-l-primary";
-                
+
                 return (
-                <tr key={show.id} className={trClass}>
-                  <td className="px-6 py-4">
-                    <div className="font-bold">{show.title}</div>
-                    <div className="text-[10px] text-slate-500 uppercase font-black">{show.host}</div>
-                  </td>
-                  <td className="px-6 py-4 text-[10px] font-bold text-slate-400 max-w-[150px] truncate">{show.days}</td>
-                  <td className="px-6 py-4 text-slate-400 text-sm">{show.time_start.substring(0,5)} - {show.time_end.substring(0,5)}</td>
-                  <td className="px-6 py-4">
-                    {settings?.auto_schedule && autoShow?.id === show.id ? (
-                      <span className="px-3 py-1 rounded-full text-[10px] font-black tracking-widest uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                        ⚡ AUTO-ACTIVE
-                      </span>
-                    ) : (
-                      <button
-                        onClick={() => toggleLive(show.id, show.is_live)}
-                        className={`px-3 py-1 rounded-full text-[10px] font-black tracking-widest uppercase transition ${
-                          show.is_live 
-                            ? "bg-primary text-primary-foreground shadow-glow" 
+                  <tr key={show.id} className={trClass}>
+                    <td className="px-6 py-4">
+                      <div className="font-bold">{show.title}</div>
+                      <div className="text-[10px] text-slate-500 uppercase font-black">{show.host}</div>
+                    </td>
+                    <td className="px-6 py-4 text-[10px] font-bold text-slate-400 max-w-[150px] truncate">{show.days}</td>
+                    <td className="px-6 py-4 text-slate-400 text-sm">{show.time_start.substring(0, 5)} - {show.time_end.substring(0, 5)}</td>
+                    <td className="px-6 py-4">
+                      {settings?.auto_schedule && autoShow?.id === show.id ? (
+                        <span className="px-3 py-1 rounded-full text-[10px] font-black tracking-widest uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                          ⚡ AUTO-ACTIVE
+                        </span>
+                      ) : (
+                        <button
+                          onClick={() => toggleLive(show.id, show.is_live)}
+                          className={`px-3 py-1 rounded-full text-[10px] font-black tracking-widest uppercase transition ${show.is_live
+                            ? "bg-primary text-primary-foreground shadow-glow"
                             : "bg-slate-800 text-slate-500"
-                        }`}
-                      >
-                        {show.is_live ? "🔴 MANUAL" : "OFFLINE"}
-                      </button>
-                    )}
-                  </td>
-                  <td className="px-6 py-4 text-right space-x-3">
-                    <button onClick={() => { setCurrentShow(show); setFormData({ ...show }); setIsEditing(true); setErrorMsg(""); setSuccessMsg(""); setConflictId(null); }} className="text-primary hover:text-white transition text-sm font-bold">Editar</button>
-                    <button onClick={() => deleteShow(show.id)} className="text-red-400 hover:text-red-300 transition text-sm font-bold">Eliminar</button>
-                  </td>
-                </tr>
+                            }`}
+                        >
+                          {show.is_live ? "🔴 MANUAL" : "OFFLINE"}
+                        </button>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 text-right space-x-3">
+                      <button onClick={() => { setCurrentShow(show); setFormData({ ...show }); setIsEditing(true); setErrorMsg(""); setSuccessMsg(""); setConflictId(null); }} className="text-primary hover:text-white transition text-sm font-bold">Editar</button>
+                      <button onClick={() => deleteShow(show.id)} className="text-red-400 hover:text-red-300 transition text-sm font-bold">Eliminar</button>
+                    </td>
+                  </tr>
                 );
               })}
               {shows.length === 0 && (
@@ -584,7 +587,7 @@ function AdminNews() {
   }, []);
 
   async function fetchNews() {
-    const { data } = await supabase.from("news").select("*").order("date", { ascending: false });
+    const { data } = await supabase.from("news").select("*").eq("source", "manual").order("date", { ascending: false });
     if (data) setNews(data);
     setLoading(false);
   }
@@ -592,11 +595,11 @@ function AdminNews() {
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    
+
     if (currentNews) {
       await supabase.from("news").update(formData).eq("id", currentNews.id);
     } else {
-      await supabase.from("news").insert([formData]);
+      await supabase.from("news").insert([{ ...formData, source: "manual" }]);
     }
 
     setIsEditing(false);
@@ -618,7 +621,7 @@ function AdminNews() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h3 className="text-xl font-bold">Gestión de Noticias</h3>
-        <button 
+        <button
           onClick={() => { setIsEditing(true); setCurrentNews(null); setFormData({ title: "", category: "Local", image_url: "", body: "", published: true }); }}
           className="px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-bold hover:bg-emerald-500 transition"
         >
@@ -658,34 +661,44 @@ function AdminNews() {
                   Imagen de la noticia
                   <ContextHelp text="Sube una foto representativa. Se convertirá automáticamente a WebP para mayor velocidad." />
                 </label>
-                <ImageUploader 
-                  folder="news" 
+                <ImageUploader
+                  folder="news"
                   currentImageUrl={formData.image_url}
-                  onUploadComplete={(url) => setFormData({ ...formData, image_url: url })} 
+                  onUploadComplete={(url) => setFormData((prev) => ({ ...prev, image_url: url }))}
                 />
               </div>
             </div>
             <div className="space-y-4">
-              <div>
+              <div className="flex flex-col">
                 <label className="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Contenido</label>
-                <textarea
-                  required
-                  rows={8}
-                  value={formData.body}
-                  onChange={(e) => setFormData({ ...formData, body: e.target.value })}
-                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl outline-none resize-none"
-                />
+                <Suspense fallback={<div className="h-40 bg-slate-800 animate-pulse rounded-xl" />}>
+                  <ReactQuill
+                    theme="snow"
+                    value={formData.body}
+                    onChange={(val) => setFormData({ ...formData, body: val })}
+                    className="flex-1 bg-slate-800 rounded-xl border-none overflow-hidden quill-dark"
+                    modules={{
+                      toolbar: [
+                        [{ 'header': [1, 2, 3, false] }],
+                        ['bold', 'italic', 'underline', 'strike'],
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                        ['link'],
+                        ['clean']
+                      ]
+                    }}
+                  />
+                </Suspense>
               </div>
               <div className="flex items-center gap-2">
-                <input 
-                  type="checkbox" 
-                  id="published" 
+                <input
+                  type="checkbox"
+                  id="published"
                   checked={formData.published}
                   onChange={(e) => setFormData({ ...formData, published: e.target.checked })}
                   className="w-4 h-4 rounded border-slate-700 bg-slate-800 text-primary focus:ring-primary"
                 />
                 <label htmlFor="published" className="text-sm font-bold text-slate-300">
-                  Publicar noticia 
+                  Publicar noticia
                   <ContextHelp text="Solo las noticias publicadas aparecen en la página principal" />
                 </label>
               </div>
@@ -706,7 +719,11 @@ function AdminNews() {
               </div>
               <div className="p-5 flex-1">
                 <h4 className="font-bold mb-2 line-clamp-2">{item.title}</h4>
-                <p className="text-slate-500 text-xs line-clamp-3 mb-4">{item.body}</p>
+                <div 
+                  className="text-slate-500 text-xs line-clamp-3 mb-4 prose prose-invert max-w-none break-words overflow-wrap-anywhere" 
+                  dangerouslySetInnerHTML={{ __html: item.body }} 
+                  style={{ overflowWrap: 'anywhere', wordBreak: 'break-word' }}
+                />
                 <div className="flex justify-between mt-auto">
                   <button onClick={() => { setCurrentNews(item); setFormData({ ...item }); setIsEditing(true); }} className="text-primary text-sm font-bold">Editar</button>
                   <button onClick={() => deleteNews(item.id)} className="text-red-500 text-sm font-bold">Eliminar</button>
@@ -758,14 +775,14 @@ function AdminGallery() {
     <div className="space-y-8">
       <form onSubmit={handleAdd} className="bg-slate-900 border border-slate-800 rounded-3xl p-8 space-y-6">
         <h3 className="text-sm font-bold uppercase tracking-widest text-slate-500">Añadir a Galería</h3>
-        
+
         <div className="grid md:grid-cols-2 gap-8">
           <div>
             <label className="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Foto del evento</label>
-            <ImageUploader 
-              folder="gallery" 
+            <ImageUploader
+              folder="gallery"
               currentImageUrl={newImage.image_url}
-              onUploadComplete={(url) => setNewImage({ ...newImage, image_url: url })} 
+              onUploadComplete={(url) => setNewImage((prev) => ({ ...prev, image_url: url }))}
             />
           </div>
           <div className="space-y-4">
@@ -1042,7 +1059,7 @@ function AdminTopSongs() {
       .from("top_songs")
       .select("*")
       .order("position", { ascending: true });
-    
+
     if (data && data.length > 0) {
       setSongs(data);
     } else {
@@ -1088,7 +1105,7 @@ function AdminTopSongs() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h3 className="text-xl font-bold">Ranking Semanal (Top 10)</h3>
-        <button 
+        <button
           onClick={saveAll}
           disabled={saving}
           className="px-6 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-black tracking-tight hover:scale-105 transition shadow-glow"
@@ -1200,7 +1217,7 @@ function AdminSocialServices() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h3 className="text-xl font-bold">Servicios Sociales</h3>
-        <button 
+        <button
           onClick={() => { setIsEditing(true); setCurrent(null); setFormData({ title: "", category: "Comunicado", date: new Date().toISOString().split('T')[0], description: "", published: true }); }}
           className="px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-bold hover:bg-emerald-500 transition"
         >
@@ -1331,7 +1348,7 @@ function AdminFeaturedPrograms() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h3 className="text-xl font-bold">Programas Destacados (Podcasts)</h3>
-        <button 
+        <button
           onClick={() => { setIsEditing(true); setCurrent(null); setFormData({ title: "", description: "", duration: "", date_label: "ESTA SEMANA", audio_url: "", published: true }); }}
           className="px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-bold hover:bg-emerald-500 transition"
         >
@@ -1442,6 +1459,7 @@ function AdminNewsApi() {
       .from("news")
       .select("*")
       .eq("published", false)
+      .eq("source", "newsapi")
       .order("date", { ascending: false });
     if (data) setNews(data);
     setLoading(false);
@@ -1487,7 +1505,11 @@ function AdminNewsApi() {
               <p className="text-slate-500 text-[10px] mb-2 font-bold uppercase tracking-widest">
                 {new Date(item.date || new Date()).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })}
               </p>
-              <p className="text-slate-500 text-xs line-clamp-3 mb-4">{item.body}</p>
+              <div 
+                className="text-slate-500 text-xs line-clamp-3 mb-4 prose prose-invert max-w-none break-words overflow-wrap-anywhere" 
+                dangerouslySetInnerHTML={{ __html: item.body }} 
+                style={{ overflowWrap: 'anywhere', wordBreak: 'break-word' }}
+              />
               <div className="flex justify-between mt-auto gap-3">
                 <button onClick={() => publishNews(item.id)} className="flex-1 text-emerald-400 hover:text-emerald-300 transition text-sm font-bold bg-emerald-500/10 py-2 rounded-lg text-center">Publicar</button>
                 <button onClick={() => deleteNews(item.id)} className="flex-1 text-red-400 hover:text-red-300 transition text-sm font-bold bg-red-500/10 py-2 rounded-lg text-center">Eliminar</button>
